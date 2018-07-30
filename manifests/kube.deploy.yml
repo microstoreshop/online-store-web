@@ -66,4 +66,4 @@ spec:
           value: "cloud"
         - name: spring.cloud.config.uri
           value: "http://config-service.default.svc.cluster.local:8888"
-podManagementPolicy: "Parallel"
+podManagementPolicy: "Parallel" 
