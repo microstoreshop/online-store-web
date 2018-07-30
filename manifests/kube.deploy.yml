@@ -55,7 +55,7 @@ spec:
             cpu: 100m
             memory: 192Mi 
         name: online-store-web
-        image: mycluster.icp:8500/default/kbastani/online-store-web:latest
+        image: online-store-web:latest
         ports:
         - containerPort: 8787
         env:
