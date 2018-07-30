@@ -1,0 +1,69 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: online-store-web-expose
+  namespace: default
+  labels:
+    app: online-store-web
+spec:
+  ports:
+  - name: online-store-web
+    protocol: TCP
+    port: 31705
+    targetPort: 8787
+    nodePort: 31705
+  selector:
+    app: online-store-web
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: online-store-web
+  labels:
+    app: online-store-web
+spec:
+  ports:
+  - port: 8787
+    targetPort: 8787
+    name: online-store-web
+  clusterIP: None
+  selector:
+    app: online-store-web
+---    
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: online-store-web
+spec:
+  serviceName: "online-store-web"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: online-store-web
+  template:
+    metadata:
+      labels:
+        app: online-store-web
+    spec:
+      containers:
+      - resources:
+          requests:
+            cpu: 100m
+            memory: 192Mi 
+        name: online-store-web
+        image: mycluster.icp:8500/default/kbastani/online-store-web:latest
+        ports:
+        - containerPort: 8787
+        env:
+        - name: JAVA_OPTS
+          value: |
+            -Xmx160m
+        - name: spring.profiles.active
+          value: "cloud"
+        - name: spring.cloud.config.uri
+          value: "http://config-service.default.svc.cluster.local:8888"
+podManagementPolicy: "Parallel"
